@@ -49,7 +49,7 @@ export default {
        items: [
         { title: "Home", icon: "mdi-home", to: "/" },
         { title: "Caixa", icon: "mdi-basket-unfill", to: "/" },
-        { title: "Produtos", icon: "mdi-basket", to: "/produtos" },
+        { title: "Produtos", icon: "mdi-basket-plus", to: "/Produtos" },
         { title: "Informações", icon: "mdi-store-cog", to: "/" },
         { title: "Lembretes", icon: "mdi-clipboard-edit-outline", to: "/" },
         { title: "Sair", icon: "mdi-exit-to-app", to: "/login" },

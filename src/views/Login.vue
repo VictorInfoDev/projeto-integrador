@@ -1,15 +1,32 @@
 <template>
   <v-app>
       <v-container fill-height fluid text-center >
-        <v-container>
-          <v-card max-width="500" class="mx-auto my-12 pa-5">
-          <v-row>
-             <v-col
-              class="primary--text text-center pb-4"
-              ><h1 class="h1">Login</h1></v-col
+        <v-container> 
+          <v-card class="mx-auto my-12" max-width="500" elevation="0">
+          <v-col
+            class="text-center text-h3">
+            <div class="primary">
+              <span 
+              class="white--text"
               >
-          </v-row>
-          <v-row>
+              Shop
+              </span>
+            </div>
+            <div style="border-style:solid;border-width:3px;border-color:#1976D2;">
+              <span 
+              class="primary--text"
+              >
+              WorkSpace
+              </span>
+            </div>
+          </v-col>
+          </v-card>      
+          <v-card class="mx-auto my-12" max-width="500">
+          <v-col
+            class="text-center pb-10 text-h1 primary--text mt-15"
+            ><b>Login</b>
+          </v-col>
+          <v-row class="pa-5">
           <v-col>
             <v-form>
               <v-text-field label="Email" v-model="user.email"></v-text-field>
