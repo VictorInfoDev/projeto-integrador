@@ -35,7 +35,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main>
+    <v-main> 
       <router-view></router-view>
     </v-main>
 
@@ -50,8 +50,8 @@ export default {
         { title: "Home", icon: "mdi-home", to: "/" },
         { title: "Caixa", icon: "mdi-basket-unfill", to: "/" },
         { title: "Produtos", icon: "mdi-basket-plus", to: "/Produtos" },
-        { title: "Informações", icon: "mdi-store-cog", to: "/" },
         { title: "Lembretes", icon: "mdi-clipboard-edit-outline", to: "/" },
+        { title: "Informações", icon: "mdi-store-cog", to: "/" },
         { title: "Sair", icon: "mdi-exit-to-app", to: "/login" },
       ],
 

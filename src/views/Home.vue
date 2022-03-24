@@ -11,13 +11,23 @@
             <v-btn to="/" class="ma-2" fab dark color="primary"><v-icon dark>mdi-clipboard-edit-outline</v-icon></v-btn>
             <br>
             <br>
-            <div style="border-left-style:solid;border-left-color:black;border-left-width:10px;padding-left:10px;font-size:20px;"><span>Este site foi desenvolvido para melhorar o gerenciamento de produtos para todas as lojas em geral,<br>um sistema simples ,prático e organizado para acelerar os processos de suas vendas,<br> deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.</span></div>
+            <div>
+                <v-alert
+                color="primary"
+                dense
+                border="left"
+                elevation="5"
+                colored-border
+                class="font-weight-medium"
+                >
+                  Este site foi desenvolvido para melhorar o gerenciamento de produtos para todas as lojas e empresas em geral, um sistema simples , prático e organizado para acelerar os processos de suas vendas, deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
+                </v-alert>
+            </div>
             <br>
-            <div style="border-left-style:solid;border-left-color:green;border-left-width:10px;padding-left:10px">
-            <span class="text-h5"><strong>❝Faça o que você pode, com o que você tem, onde você estiver.❞</strong></span>
+            <v-alert color="success" colored-border elevation="5" border="left"><span class="text-h5"><strong>❝ Faça o que você pode, com o que você tem, onde você estiver. ❞</strong></span>
             <br>
             <span style="color:gray;margin-left:10px;">Theodore Roosevelt</span>
-            </div>
+            </v-alert>
             </div>
         </div>
     </v-app>
