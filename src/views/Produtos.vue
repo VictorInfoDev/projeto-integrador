@@ -51,16 +51,34 @@
               </v-chip>
             </template>
             <template v-slot:item.iconTable="{ item }">
-              <v-icon v-model="item.iconTable"
-              @click="deletarProduto(item.idproduto,desserts)"
+              <v-chip class="error">
+                <v-icon v-model="item.iconTable"
+                @click="snackbar = true"
+                >
+                  mdi-delete
+                </v-icon>
+              </v-chip>
+              <v-snackbar
+              v-model="snackbar"
+              :multi-line="multiLine"
               >
-              mdi-delete
-              </v-icon>
+              Deseja excluir?
+              <template v-slot:action="{ attrs }">
+              <v-btn
+                color="red"
+                text
+                v-bind="attrs"
+                @click="deletarProduto(item.idproduto,desserts),snackbar = false"
+              >
+              Excluir
+              </v-btn>
+              </template>
+              </v-snackbar>
             </template>
             </v-data-table>
         </v-card>
       </div>
-      <!-- Dialog Aqui
+      <!-- DialogSalvar
       --
       --
       --
@@ -143,7 +161,7 @@
           </v-container>
           <v-alert
           v-model="alertInputProdutos"
-          transition="slide-x-transition"
+          transition="scale-transition"
           dismissible
           text
           type="warning"
@@ -181,6 +199,8 @@ import { doc, deleteDoc } from "firebase/firestore";
   export default {
     data () {
       return {
+        multiLine: true,
+        snackbar: false,
         valorProduto:null,
         quantProduto:null,
         alertInputProdutos:false,
@@ -200,7 +220,7 @@ import { doc, deleteDoc } from "firebase/firestore";
           { text: 'Classificação', value: 'classf',sortable:false },
           { text: 'Quantidade', value: 'quant',sortable:true,},
           { text: 'ID', value: 'idproduto',sortable:false},
-          { value: 'iconTable',sortable:false },
+          { text: 'Opções',value: 'iconTable',sortable:false },
         ],
         desserts: [],
       }
@@ -230,6 +250,7 @@ import { doc, deleteDoc } from "firebase/firestore";
             quantidade: this.quantProduto,
             })
             this.buscarProdutos();
+            this.dialogProduto=false
         }
         //resetform
         this.nomeProduto=null
@@ -268,6 +289,7 @@ import { doc, deleteDoc } from "firebase/firestore";
         const v = this.desserts.indexOf(desserts)
         this.desserts.splice(v, 1)
         await deleteDoc(doc(fb.produtosCollection, idproduto));
+        
       }
         
         
