@@ -4,20 +4,22 @@
         <div style="border-left-style:solid;border-left-color:#1976D2;border-left-width:8px;padding-left:10px;" class="text-h4 my-8">Cadastre seus produtos aqui!</div>
         <div style="color:gray;" class="h5 mt-2 mb-4">
         <v-alert
-        border="left"
-        colored-border
+        outlined
         type="info"
-        elevation="2"
         >
         Primeiramente crie suas classificações em <v-icon color="primary">mdi-bookmark-plus</v-icon> para deixar seus produtos organizados por classificação.
         </v-alert>
         </div>
-        <v-card class="mt-8" dark>
+        <v-card class="mt-8">
           <div class="text-h2 primary--text pa-5">Produtos</div>
           <v-divider></v-divider>
             <v-card-title>
-                <v-btn class="ma-2" fab dark color="primary" @click.stop="dialogProduto = !dialogProduto"><v-icon dark>mdi-basket-plus</v-icon></v-btn>
-                <v-btn class="ma-2" fab dark color="primary"><v-icon dark>mdi-bookmark-plus</v-icon></v-btn>
+              <div style="background-color:#BBDEFB;border-radius:15px;" align="center">
+                <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogProduto = !dialogProduto"><v-icon dark>mdi-basket-plus</v-icon></v-btn>
+                <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogClass = !dialogClass"><v-icon dark>mdi-bookmark-plus</v-icon></v-btn>
+                <v-btn class="ma-4" fab dark color="primary" @click.stop="dialogClassDelete = !dialogClassDelete"><v-icon dark>mdi-bookmark-minus</v-icon></v-btn>
+                <v-btn v-for="iconLog in iconsLogs" :key="iconLog.id" class="ma-4" fab dark color="primary" @click="configOpcaoValid()"><v-icon>{{  iconLog.icon  }}</v-icon></v-btn>
+              </div>
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"
@@ -33,6 +35,7 @@
                 append-icon="mdi-bookmark"
                 v-model="search"
                 :items="items"
+                item-text="classeProduto"
                 clearable
                 label="Classificações"
                 ></v-select>
@@ -51,33 +54,165 @@
               </v-chip>
             </template>
             <template v-slot:item.iconTable="{ item }">
-              <v-chip class="error">
-                <v-icon v-model="item.iconTable"
-                @click="snackbar = true"
+              <v-chip class="warning ml-3" 
+              :disabled="configOpcao"
+              @click="logProduto(item.idproduto,dialogEditar)">
+                <v-icon v-model="item.iconTableEdit"
+                >
+                  mdi-pencil
+                </v-icon>
+              </v-chip>
+              <v-chip 
+              :disabled="configOpcao"
+              class="error ml-3" @click="deletarProduto(item.idproduto,desserts)">
+              <v-icon v-model="item.iconTableExluir"
                 >
                   mdi-delete
                 </v-icon>
               </v-chip>
-              <v-snackbar
-              v-model="snackbar"
-              :multi-line="multiLine"
-              >
-              Deseja excluir?
-              <template v-slot:action="{ attrs }">
-              <v-btn
-                color="red"
-                text
-                v-bind="attrs"
-                @click="deletarProduto(item.idproduto,desserts),snackbar = false"
-              >
-              Excluir
-              </v-btn>
-              </template>
-              </v-snackbar>
             </template>
             </v-data-table>
         </v-card>
       </div>
+      <!-- DialogClassDelete
+      --
+      --
+      --
+      --
+      --
+      --
+      -->
+      <v-dialog v-model="dialogClassDelete" persistent max-width="500px">
+        <v-card>
+          <v-card-title class="primary white--text">
+            <v-icon class="mr-2" color="white">mdi-bookmark-minus</v-icon><span class="text-h6">Deletar classificação</span>
+            <v-spacer></v-spacer>
+            <v-icon @click="dialogClassDelete = false" color="white">mdi-close</v-icon>
+          </v-card-title>
+          <v-card-text>
+              <v-simple-table>
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">
+                        Classificações
+                      </th>
+                      <th class="text-right">
+                        Opções
+                      </th>
+                      <th class="text-left">
+                        ID
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <tr
+                    v-for="classText of classTexts" :key="classText.id"
+                    >
+                  <td>{{ classText.name }}</td>
+                  <td class="text-right"><v-icon @click="deletarClasse(classText.idClasse)" color="error">mdi-close</v-icon></td>
+                  <td><v-chip class="gray">{{ classText.idClasse}}</v-chip></td>
+                  </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+      <!-- DialogEdit
+      --
+      --
+      --
+      --
+      --
+      --
+      -->
+      <v-dialog v-model="dialogEditar" persistent max-width="700px">
+        <v-card v-for="itemEdit in Edits" :key="itemEdit.id">
+          <v-card-title class="primary white--text">
+            <v-icon class="mr-2" color="white">mdi-pencil</v-icon><span class="text-h5">Editar produto</span> 
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+          <v-container>
+            <v-form
+                ref="formEditar"
+                v-model="valid"
+                lazy-validation
+            >
+            <v-row>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+              <v-text-field
+                  :rules="[() => !!itemEdit.nomeProdutoEdit || 'Campo obrigatório']"
+                  :error-messages="errorMessages"
+                  append-icon="mdi-basket"
+                  label="Nome do produto"
+                  required
+                  v-model="itemEdit.nomeProdutoEdit"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  :rules="[() => !!itemEdit.valorProdutoEdit || 'Campo obrigatório']"
+                  append-icon="mdi-cash"
+                  label="Valor do produto(R$)"
+                  type="number"
+                  v-model="itemEdit.valorProdutoEdit"
+                  required
+                ></v-text-field>
+              </v-col>              
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  append-icon="mdi-animation"
+                  label="Quantidade"
+                  type="number"
+                  hint="(opicional)"
+                  v-model="itemEdit.quantProdutoEdit"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-select
+                :rules="[v => !!v || 'Campo obrigatório']"
+                append-icon="mdi-bookmark"
+                v-model="itemEdit.tipoProdutoEdit"
+                :items="items"
+                item-text="classeProduto"
+                clearable
+                label="Classificações"
+                required
+                ></v-select>
+              </v-col>
+
+            </v-row>
+            </v-form>
+          </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="dialogEditar = !dialogEditar" elevation="2">
+              Fechar
+            </v-btn>
+            <v-btn @click="salvarEditProdutos(itemEdit.nomeProdutoEdit,itemEdit.valorProdutoEdit,itemEdit.quantProdutoEdit,itemEdit.tipoProdutoEdit)" color="primary" elevation="2">
+              Salvar
+            </v-btn>  
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- DialogSalvar
       --
       --
@@ -88,9 +223,10 @@
       -->
     <v-dialog v-model="dialogProduto" persistent max-width="700px">
      <v-card>
-        <v-card-title>
-          <span class="text-h5 primary--text">Cadastrar produto</span>
+        <v-card-title class="primary white--text">
+          <v-icon class="mr-2" color="white">mdi-basket-plus</v-icon><span class="text-h5">Cadastrar produto</span>
         </v-card-title>
+        <v-divider></v-divider>
         <v-card-text>
           <v-container>
             <v-form
@@ -126,22 +262,7 @@
                   v-model="valorProduto"
                   required
                 ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-select
-                :rules="[v => !!v || 'Campo obrigatório']"
-                append-icon="mdi-bookmark"
-                v-model="tipoProduto"
-                :items="items"
-                clearable
-                label="Classificações"
-                required
-                ></v-select>
-              </v-col>
+              </v-col>              
               <v-col
                 cols="12"
                 sm="6"
@@ -156,6 +277,21 @@
                   required
                 ></v-text-field>
               </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-select
+                :rules="[v => !!v || 'Campo obrigatório']"
+                append-icon="mdi-bookmark"
+                v-model="tipoProduto"
+                :items="items"
+                item-text="classeProduto"
+                clearable
+                label="Classificações"
+                required
+                ></v-select>
+              </v-col>
+
             </v-row>
             </v-form>
           </v-container>
@@ -173,7 +309,6 @@
           <v-btn
             color=""
             elevation="2"
-            tile
             @click="reset(nomeProduto,tipoProduto,valorProduto,quantProduto)"
 
           >
@@ -183,13 +318,56 @@
             :disabled="!valid"
             color="primary"
             elevation="2"
-            tile
             @click="salvarFirebase(nomeProduto,valorProduto,tipoProduto,dialogProduto,quantProduto)"
           >
             salvar
           </v-btn>
         </v-card-actions>
       </v-card>
+      </v-dialog>
+      <!-- Dialog Classes
+      --
+      --
+      --
+      --
+      -- 
+      -->
+      <v-dialog v-model="dialogClass" persistent max-width="500px">
+        <v-card>
+          <v-card-title class="primary white--text">
+              <v-icon class="mr-2" color="white">mdi-bookmark-plus</v-icon> Cadastrar Classificações
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-alert
+          v-model="alertInputProdutosClass"
+          transition="scale-transition"
+          dismissible
+          text
+          type="warning"
+          class="ma-5"
+          >Preencha o campo.
+          </v-alert>
+          <v-card-text>
+          <v-form ref="formClass">
+            <v-text-field
+            label="Classificação"
+            required
+            v-model="nameClass"
+            append-icon="mdi-bookmark"
+            >
+            </v-text-field>
+          </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="resetClass()">
+              fechar
+            </v-btn>
+            <v-btn @click="addClass()" class="primary">
+              Salvar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
   </v-app>
 </template>
@@ -199,16 +377,24 @@ import { doc, deleteDoc } from "firebase/firestore";
   export default {
     data () {
       return {
+        uid:'',
+        configOpcao: false,
+        dialogClassDelete:false,
+        dialogEditar:false,
+        dialogClass:false,
+        dialogProduto:false,
+        alertInputProdutosClass:false,
+        alertInputProdutos:false,
+        editValid:null,      
+        valid: true,
+        exemplo:null,
         multiLine: true,
         snackbar: false,
-        valorProduto:null,
-        quantProduto:null,
-        alertInputProdutos:false,
-        valid: true,
-        dialogProduto:false,
-        items:['Copo','Bebidas'],
-        claselect:'',
         search:'',
+        iconsLogs:[],
+        items:[],
+        classTexts:[],
+        Edits:[],
         headers: [
           {
             text: 'Produto',
@@ -227,8 +413,12 @@ import { doc, deleteDoc } from "firebase/firestore";
     },
     mounted() {
     this.buscarProdutos();
+    this.buscarClass();
+    this.buscarClassTabela();
+    this.configOpcaoValid();
     },
     methods: {
+      //methods produtos salvar*******************************************************************************************
        async salvarFirebase () {
         var soma= this.valorProduto + this.quantProduto
         alert(soma)
@@ -243,16 +433,23 @@ import { doc, deleteDoc } from "firebase/firestore";
         }
         //firebase
         else{
-            await fb.produtosCollection.add({
+            this.uid = fb.auth.currentUser.uid;
+            const res = await fb.produtosCollection.add({
+            uid: this.uid,
             produto: this.nomeProduto,
             valor: this.valorProduto,
             classe: this.tipoProduto,
             quantidade: this.quantProduto,
-            })
+            });
+            const idprodutoAdd = res.id
+            await fb.produtosCollection.doc(idprodutoAdd).update({
+              produtoID: idprodutoAdd,
+            });
             this.buscarProdutos();
             this.dialogProduto=false
+            this.configOpcao=true
         }
-        //resetform
+        //reset form
         this.nomeProduto=null
         this.tipoProduto=null
         this.valorProduto=null
@@ -260,7 +457,6 @@ import { doc, deleteDoc } from "firebase/firestore";
         this.$refs.form.resetValidation()
         
         
-
       },
       reset () {
         this.nomeProduto=null
@@ -270,12 +466,14 @@ import { doc, deleteDoc } from "firebase/firestore";
         this.dialogProduto=false
         this.$refs.form.resetValidation()
       },
+      //methods produtos buscar*******************************************************************************************
       async buscarProdutos() {
+        this.uid = fb.auth.currentUser.uid;
         this.desserts = [];
-        const logTasks = await fb.produtosCollection.get();
+        const logTasks = await fb.produtosCollection.where("uid","==",this.uid).get();
         for (const doc of logTasks.docs) {
           this.desserts.push({
-            idproduto: doc.id,
+            idproduto: doc.data().produtoID,
             name: doc.data().produto,
             valor: doc.data().valor,
             classf: doc.data().classe,
@@ -284,20 +482,112 @@ import { doc, deleteDoc } from "firebase/firestore";
             })
           }
         },
-      async deletarProduto(idproduto, desserts) {
-        
-        const v = this.desserts.indexOf(desserts)
-        this.desserts.splice(v, 1)
+       //methods produtos deletar******************************************************************************************
+      async deletarProduto(idproduto) {
         await deleteDoc(doc(fb.produtosCollection, idproduto));
+        this.buscarProdutos();
+      },
+       //methods produtos editar*******************************************************************************************
+      async logProduto(idproduto){
+        this.dialogEditar = true
+        this.Edits = [];
+        this.idEditar = idproduto
+        this.editValid = idproduto
+        const logTasks = await fb.produtosCollection.where("produtoID", "==", this.idEditar).get();
+        for (const doc of logTasks.docs) {
+          this.Edits.push({
+            nomeProdutoEdit: doc.data().produto,
+            valorProdutoEdit: doc.data().valor,
+            quantProdutoEdit: doc.data().quantidade,
+            tipoProdutoEdit: doc.data().classe,
+          })
+        }
+      },
+      async salvarEditProdutos(nomeProdutoEdit,valorProdutoEdit,quantProdutoEdit,tipoProdutoEdit){
+          await fb.produtosCollection.doc(this.editValid).update({
+              produto: nomeProdutoEdit,
+              valor: valorProdutoEdit,
+              quantidade: quantProdutoEdit,
+              classe: tipoProdutoEdit
+        });
+        this.dialogEditar = false
+        this.buscarProdutos();
+      },
+      //methods classse salvar********************************************************************************************
+      async addClass(){
+        if(this.nameClass == '' || this.nameClass == null){
+          this.alertInputProdutosClass = true
+        }
+        else{
+          this.uid = fb.auth.currentUser.uid;
+           const res =  await fb.classeCollection.add({
+             uid:this.uid,
+             classeSelect: this.nameClass
+           });
+            const idclasseAdd = res.id
+            await fb.classeCollection.doc(idclasseAdd).update({
+              classeID: idclasseAdd,
+            });
+           this.buscarClass()
+           this.buscarClassTabela()
+           this.$refs.formClass.reset()
+           this.dialogClass = false
+        }
         
-      }
-        
-        
-      
+      },
+      resetClass(){
+        this.$refs.formClass.reset()
+        this.dialogClass = false
+      },
+      //methods classse buscar********************************************************************************************
+      async buscarClass(){
+        this.uid = fb.auth.currentUser.uid;
+        this.items = [];
+        const logTasks = await fb.classeCollection.where("uid","==",this.uid).get();
+        for (const doc of logTasks.docs) {
+          this.items.push({
+            classeProduto: doc.data().classeSelect,  
+            })
+          }
+      },
+      async buscarClassTabela(){
+        this.uid = fb.auth.currentUser.uid;
+        this.classTexts = [];
+        const logTasks = await fb.classeCollection.where("uid","==",this.uid).get();
+        for (const doc of logTasks.docs) {
+          this.classTexts.push({
+            name: doc.data().classeSelect,
+            idClasse: doc.data().classeID  
+            });
+          }
+      },
+      //methods classse deletar***********************************************************************************************  
+      async deletarClasse(idClasse){
+        await deleteDoc(doc(fb.classeCollection, idClasse));
+        this.buscarClassTabela();
+        this.buscarClass();
+      },
+       //methods valid edit****************************************************************************************************
+       configOpcaoValid(){
+         this.iconsLogs = []
+         if(this.configOpcao == false){
+           this.iconsLogs.push({
+              icon:'mdi-pencil'
+           });
+           this.configOpcao = true
+         }
+         else{
+           this.iconsLogs.push({
+              icon:'mdi-pencil-off'
+           });
+           this.configOpcao = false
+         }
+
+       }
     },
+
   }
 </script>
 
 <style>
-
 </style>

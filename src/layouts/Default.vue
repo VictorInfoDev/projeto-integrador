@@ -1,15 +1,15 @@
 <template>
   <v-app>
     <!-- bar-top -->
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app dark>
       <v-app-bar-nav-icon @click.stop="sidebar = !sidebar"></v-app-bar-nav-icon>
       <span style="font-size:25px;">Nome Loja</span>
       <v-spacer></v-spacer>
       <v-icon>mdi-store-cog</v-icon>
     </v-app-bar>
     <!-- drawer -->
-     <v-navigation-drawer app v-model="sidebar">
-      <v-list dense color="primary" dark>
+     <v-navigation-drawer app v-model="sidebar" dark>
+      <v-list dense>
         <v-list-item>
           <v-list-item-action>
             <v-icon @click.stop="sidebar = !sidebar">mdi-chevron-left</v-icon>
@@ -34,6 +34,16 @@
           <v-list-item-content>{{ item.title }}</v-list-item-content>
         </v-list-item>
       </v-list>
+      <div class="ma-5">
+      <v-switch
+        class="mr-"
+        v-model="$vuetify.theme.dark"
+        hint="Descanse um pouco seus olhos."
+        inset
+        label="Night Mode"
+        persistent-hint
+      ></v-switch>
+      </div>
     </v-navigation-drawer>
     <v-main> 
       <router-view></router-view>
@@ -48,9 +58,9 @@ export default {
       sidebar:true,
        items: [
         { title: "Home", icon: "mdi-home", to: "/" },
-        { title: "Caixa", icon: "mdi-basket-unfill", to: "/" },
+        { title: "Venda", icon: "mdi-basket-unfill", to: "/Venda" },
         { title: "Produtos", icon: "mdi-basket-plus", to: "/Produtos" },
-        { title: "Lembretes", icon: "mdi-clipboard-edit-outline", to: "/" },
+        { title: "Lembretes", icon: "mdi-clipboard-outline", to: "/" },
         { title: "Informações", icon: "mdi-store-cog", to: "/" },
         { title: "Sair", icon: "mdi-exit-to-app", to: "/login" },
       ],

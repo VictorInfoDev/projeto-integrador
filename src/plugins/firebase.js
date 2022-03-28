@@ -19,8 +19,9 @@ const auth = firebase.auth()
 
 const classeCollection = db.collection('classificações')
 const produtosCollection = db.collection('produtos')
+const perfilCollection = db.collection('perfil')
 
 
 export {
-    db , auth , classeCollection, produtosCollection
+    db , auth , classeCollection, produtosCollection, perfilCollection
 }
