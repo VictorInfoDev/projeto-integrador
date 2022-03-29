@@ -28,6 +28,16 @@ const routes = [
       name: 'Venda',
       component: () => import('../views/Venda.vue')
     },
+    {
+      path: '/info',
+      name: 'Info',
+      component: () => import('../views/Info.vue')
+    },
+    {
+      path: '/lembretes',
+      name: 'Lembretes',
+      component: () => import('../views/Lembretes.vue')
+    },
   ],
   },
   {

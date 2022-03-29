@@ -1,7 +1,7 @@
 <template>
   <v-app>
       <div class="pa-10">
-          Venda
+          Informações
       </div>
   </v-app>
 </template>

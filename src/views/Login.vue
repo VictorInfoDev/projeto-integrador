@@ -11,6 +11,7 @@
           -->     
           <v-card dark class="mx-auto my-12" max-width="500" elevation="2"  v-if="loginValid">
           <v-card-text class="text-h2 white" style="color:black;"><span class="success--text">Shop</span><span class="dark--text">Work</span><span class="dark--text">Space</span></v-card-text>
+          <v-progress-linear color="success" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
           <div>
           <v-col
               class="text-center text-h2 primary-text mt-15"
@@ -29,6 +30,7 @@
               @click:append="show = !show"
               ></v-text-field>
             <v-alert
+              transition="scale-transition"
               v-model="validUser"
               color="warning"
               dismissible
@@ -36,6 +38,7 @@
               type="warning"
             >Esta conta não existe, crie uma em <span class="text-decoration-underline success--text">registrar.</span></v-alert>
             <v-alert
+              transition="scale-transition"
               v-model="validUserAuth"
               color="warning"
               dismissible
@@ -57,7 +60,8 @@
           --
           -->
           <v-card dark class="mx-auto my-12" max-width="500" v-if="registerValid" elevation="2">
-          <v-card-text class="text-h2 white text-decoration-underline" style="color:black;">ShopWorkSpace</v-card-text>
+          <v-card-text class="text-h2 white" style="color:black;"><span class="success--text">Shop</span><span class="dark--text">Work</span><span class="dark--text">Space</span></v-card-text>
+          <v-progress-linear color="success" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
           <v-col
               class="text-center text-h2 primary-text mt-15"
             >Registrar
@@ -76,12 +80,21 @@
               @click:append="show = !show"
               ></v-text-field>
             <v-alert
+              transition="scale-transition"
               v-model="userExiste"
               color="warning"
               dismissible
               outlined
               type="warning"
             >Este email já está em uso.</v-alert>
+            <v-alert
+              transition="scale-transition"
+              v-model="alertInvalidInfo"
+              color="warning"
+              dismissible
+              outlined
+              type="warning"
+            >Preencha todos os campos.</v-alert>
             <v-btn outlined class="ma-2" color="white" @click="reset">Cancelar</v-btn>
             <v-btn outlined color="green" @click="criarNovaConta()" style="color:white">Registrar</v-btn>
             <v-btn text color="info" class="ml-2 text-decoration-underline" @click="registerValid = false, loginValid = true">Login</v-btn>
@@ -99,14 +112,24 @@ import * as fb from '@/plugins/firebase'
 export default {
   data(){
     return{
+      alertInvalidInfo: false,
+      invalidInfo:false,
+      loadingLogin: false,
       userExiste:false,
       validUserAuth:false,
       validUser:false,
       loginValid:true,
       registerValid:false,
       show: false,
-      user:{},
+      user:{email:null,cnpj:null,nome:null,password:null},
     }
+  },
+  watch: {
+      loadingLogin (val) {
+        if (!val) return
+
+        setTimeout(() => (this.loadingLogin = false), 10000)
+      },
   },
   methods:{
     reset() {
@@ -118,6 +141,7 @@ export default {
           this.user.email,
           this.user.password
         );
+        this.loadingLogin = true
         this.$router.push({ name: "Home" });
       } catch (error) {
         const errorCode = error.code;
@@ -142,15 +166,32 @@ export default {
     },
     async criarNovaConta() {
     try{
+      if(this.user.nome == null || this.user.nome == '' || this.user.email == null || this.user.email == '' || this.user.cnpj == null || this.user.cnpj == '' || this.user.password == null || this.user.password == ''){
+        this.invalidInfo = false
+        this.alertInvalidInfo = true
+      }
+      else{
+        this.invalidInfo = true
+      }
+      if(this.invalidInfo == true){
       await fb.auth.createUserWithEmailAndPassword(
         this.user.email,
         this.user.password
       );
+      this.loadingLogin = true
       this.login();
       this.registrarPerfil()
+      }
+      else{
+        this.alertInvalidInfo = true
+      }
       }catch (error){
         const errorCode = error.code;
         switch (errorCode) {
+          case "auth/invalid-email":
+            this.emailInvalid = true;
+            this.user = {};
+            break;
           case "auth/email-already-in-use":
             this.userExiste = true;
             this.user = {};

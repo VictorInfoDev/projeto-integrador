@@ -7,8 +7,8 @@
             <v-divider></v-divider>
             <v-btn to="/Venda" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-basket-unfill</v-icon></v-btn>
             <v-btn to="/Produtos" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-basket-plus</v-icon></v-btn>
-            <v-btn to="/" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-store-cog</v-icon></v-btn>
-            <v-btn to="/" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-clipboard-edit-outline</v-icon></v-btn>
+            <v-btn to="/Info" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-store-cog</v-icon></v-btn>
+            <v-btn to="/Lembretes" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-clipboard-edit-outline</v-icon></v-btn>
             <br>
             <br>
             <div>
@@ -20,7 +20,7 @@
                 colored-border
                 class="font-weight-medium"
                 >
-                  Este site foi desenvolvido por estudantes do IFC com o objetivo de melhorar o gerenciamento de produtos para todas as lojas e empresas em geral, um sistema simples, prático e organizado para acelerar os processos de suas vendas, deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
+                  Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de produtos para todas as lojas e empresas em geral, um sistema simples, prático e organizado para acelerar os processos de suas vendas, deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
                 </v-alert>
             </div>
             <br>

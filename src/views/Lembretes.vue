@@ -1,17 +1,14 @@
 <template>
-  <v-app>
+    <v-app>
       <div class="pa-10">
-          Venda
+          Lembretes
       </div>
-  </v-app>
+    </v-app>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
-        }
-    }
+
 }
 </script>
 
