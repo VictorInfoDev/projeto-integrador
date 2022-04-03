@@ -163,10 +163,11 @@
                 <v-text-field
                   :rules="[() => !!itemEdit.valorProdutoEdit || 'Campo obrigatório']"
                   append-icon="mdi-cash"
-                  label="Valor do produto(R$)"
+                  label="Valor do produto"
                   type="number"
-                  v-model="itemEdit.valorProdutoEdit"
+                  v-model.number="itemEdit.valorProdutoEdit"
                   required
+                  prefix="R$"
                 ></v-text-field>
               </v-col>              
               <v-col
@@ -179,7 +180,7 @@
                   label="Quantidade"
                   type="number"
                   hint="(opicional)"
-                  v-model="itemEdit.quantProdutoEdit"
+                  v-model.number="itemEdit.quantProdutoEdit"
                   required
                 ></v-text-field>
               </v-col>
@@ -257,10 +258,11 @@
                 <v-text-field
                   :rules="[() => !!valorProduto || 'Campo obrigatório']"
                   append-icon="mdi-cash"
-                  label="Valor do produto(R$)"
+                  label="Valor do produto"
                   type="number"
-                  v-model="valorProduto"
+                  v-model.number="valorProduto"
                   required
+                  prefix="R$"
                 ></v-text-field>
               </v-col>              
               <v-col
@@ -273,7 +275,7 @@
                   label="Quantidade"
                   type="number"
                   hint="(opicional)"
-                  v-model="quantProduto"
+                  v-model.number="quantProduto"
                   required
                 ></v-text-field>
               </v-col>

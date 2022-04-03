@@ -1,5 +1,5 @@
 <template>
-  <v-app :style="{'background-image':'url(https://images5.alphacoders.com/456/thumb-1920-456536.jpg)'}">
+  <v-app :style="{'background-image':'url(https://wallpapercave.com/wp/wp5600953.jpg)'}">
       <v-container fill-height fluid text-center >
         <v-container>  
           <!-- Login 
@@ -9,20 +9,23 @@
           --
           --
           -->     
-          <v-card dark class="mx-auto my-12" max-width="500" elevation="2"  v-if="loginValid">
-          <v-card-text class="text-h2 white" style="color:black;"><span class="success--text">Shop</span><span class="dark--text">Work</span><span class="dark--text">Space</span></v-card-text>
+          <v-card dark class="mx-auto my-12" max-width="500" elevation="2"  v-if="loginValid" color="#00141b">
+          <v-img src="../assets/flower.png" height="250"></v-img>
+          <v-divider></v-divider>
           <v-progress-linear color="success" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
           <div>
           <v-col
-              class="text-center text-h2 primary-text mt-15"
+              class="text-center text-h2 success--text mt-15"
             >Login
           </v-col>
           </div>
           <v-row class="pa-5">
           <v-col>
-            <v-form>
-              <v-text-field label="Email" v-model="user.email"></v-text-field>
+            <v-form >
+              <v-text-field outlined label="Email" v-model="user.email" color="primary"></v-text-field>
               <v-text-field 
+              color="primary"
+              outlined
               label="Senha"
               v-model="user.password"
               :type="show ? 'text' : 'password'"
@@ -46,7 +49,7 @@
               type="warning"
             >Usuário ou senha inválidos.</v-alert>
             <v-btn class="ma-2" outlined color="white" @click="reset">Cancelar</v-btn>
-            <v-btn outlined color="primary" @click="login()">Login</v-btn>
+            <v-btn outlined color="primary" @click="login()" >Login</v-btn>
             <v-btn text color="success" class="ml-2 text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn>
             </v-form>
           </v-col>
@@ -59,20 +62,23 @@
           --
           --
           -->
-          <v-card dark class="mx-auto my-12" max-width="500" v-if="registerValid" elevation="2">
-          <v-card-text class="text-h2 white" style="color:black;"><span class="success--text">Shop</span><span class="dark--text">Work</span><span class="dark--text">Space</span></v-card-text>
+          <v-card dark class="mx-auto my-12" max-width="500" v-if="registerValid" elevation="2" color="#00141b">
+          <v-img src="../assets/flower.png" height="250"></v-img>
+          <v-divider></v-divider>
           <v-progress-linear color="success" :active="loadingLogin" :indeterminate="loadingLogin"></v-progress-linear>
           <v-col
-              class="text-center text-h2 primary-text mt-15"
+              class="text-center text-h2 success--text mt-15"
             >Registrar
           </v-col>
           <v-row class="pa-5">
           <v-col>
             <v-form>
-              <v-text-field label="Nome da empresa" v-model="user.nome"></v-text-field>
-              <v-text-field label="Email" v-model="user.email"></v-text-field>
-              <v-text-field label="CNPJ" v-model="user.cnpj"></v-text-field>
+              <v-text-field outlined color="success" label="Nome da empresa" v-model="user.nome"></v-text-field>
+              <v-text-field outlined color="success" label="Email" v-model="user.email"></v-text-field>
+              <v-text-field outlined color="success" label="CNPJ" v-model="user.cnpj"></v-text-field>
               <v-text-field 
+              color="success"
+              outlined
               label="Senha"
               v-model="user.password"
               :type="show ? 'text' : 'password'"
@@ -121,13 +127,12 @@ export default {
       loginValid:true,
       registerValid:false,
       show: false,
-      user:{email:null,cnpj:null,nome:null,password:null},
+      user:{email:'victoragostini2019@gmail.com',cnpj:null,nome:null,password:'minhacasa2'},
     }
   },
   watch: {
       loadingLogin (val) {
         if (!val) return
-
         setTimeout(() => (this.loadingLogin = false), 10000)
       },
   },
