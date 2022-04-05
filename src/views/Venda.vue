@@ -11,15 +11,73 @@
         </v-alert>
         <div class="text-h2 success--text mt-10">Comandas</div>
         <v-card dark outlined class="mt-8">
-          <v-card-title class="">Pedidos/Vendas <v-spacer></v-spacer><v-btn class="" fab dark color="success" @click="dialogVenda = !dialogVenda"><v-icon dark>mdi-plus</v-icon></v-btn></v-card-title>
+          <v-card-title class="">Pedidos/Vendas <v-spacer></v-spacer><v-btn class="" fab dark color="success" @click="dialogNomePedido = true"><v-icon dark>mdi-plus</v-icon></v-btn></v-card-title>
+          <v-card-text>
+            <v-card  outlined max-width="400px">
+              <v-card-title class="success text-h4">Titulo</v-card-title>
+              <v-card-text class="mt-5">
+                Descrição:
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-list shaped>
+                <v-subheader>Produtos</v-subheader>
+                <v-list-item-group color="success">
+                  <v-list-item>
+                    <v-list-item-icon><v-icon>mdi-chevron-right</v-icon></v-list-item-icon>
+                    <v-list-item-content>Opa</v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+              <v-divider></v-divider>
+              <v-card-text class="success--text text-h5">Valor:</v-card-text>
+              <v-card-actions>
+                <v-btn color="primary lighten-2" text @click="show = !show">
+                  Mais detalhes
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  icon
+                  @click="show = !show"
+                >
+                  <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                </v-btn>
+              </v-card-actions>
+              <v-expand-transition>
+                <div v-show="show">
+                  <v-card-text>
+                   ID:324234554664<br>
+                   Valor desconto:000<br>
+                   Valor acréscimo:000
+                  </v-card-text>
+                </div>
+              </v-expand-transition>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="error">Excluir</v-btn>
+                <v-btn class="success">Feito</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-card-text>
         </v-card>
       </div>
+      <v-dialog v-model="dialogNomePedido" persistent max-width="700px">
+        <v-card>
+          <v-card-text class="text-h4 success white--text pa-4">Nome pedido</v-card-text>
+          <v-card-text class="mt-5">
+            <v-text-field v-model="nomePedido" label="Nome pedido" append-icon="mdi-card-text" outlined></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="dialogNomePedido = false, nomePedido = ''">Cancelar</v-btn>
+            <v-btn class="success" @click="createPedido()">Criar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-dialog v-model="dialogVenda" persistent max-width="700px">
         <v-card>
             <v-card-text class="text-h2 success white--text pa-4">+ Pedido</v-card-text>
             <v-card-title class="text-h4 ma-2 ml-0">Informações</v-card-title>
             <v-card-text>
-            <v-text-field v-model="nomePedido" label="Nome pedido" append-icon="mdi-card-text" outlined></v-text-field>
             <v-textarea v-model="descPedido" label="Detalhes" outlined></v-textarea>
             </v-card-text>
             <v-divider></v-divider>
@@ -28,7 +86,7 @@
             </v-card-title>
             <v-card class="ma-5 mt-0" dark>
             <v-tabs dark center-active color="success" show-arrows>
-              <v-tab v-for="itemClass in classis" :key="itemClass.id">{{  itemClass.nome  }}</v-tab>
+              <v-tab @click="search = null,buscarProdutosVenda()" class="primary--text">Todos</v-tab><v-tab  v-for="itemClass in classis" :key="itemClass.id" v-model="search" @click="search = itemClass.nome, buscarProdutosVenda()">{{  itemClass.nome  }}</v-tab>
             </v-tabs>
             <v-simple-table dark>
             <thead>
@@ -46,9 +104,9 @@
                 v-for="itemProduto in items"
                 :key="itemProduto.id"
               >
-                <td>{{ itemProduto.nome }} <span class="success--text">(R$ {{  itemProduto.valor  }})</span></td>
+                <td>{{ itemProduto.nome }}<br><span class="success--text">R$ {{  itemProduto.valor  }}</span></td>
                 <td class="text-right">
-                <v-icon class="ma-2" color="success" @click="addValor(itemProduto.nome, itemProduto.id, itemProduto.valor)">mdi-plus</v-icon>
+                <v-chip class="success" @click="addValor(itemProduto.valor,itemProduto.nome)"><v-icon>mdi-plus</v-icon></v-chip>
                 </td>
               </tr>
             </tbody>
@@ -57,28 +115,43 @@
             <v-card-title class="text-h4 ma-2 ml-0">
               Listagem
             </v-card-title>
-            <v-card class="grey lighten-2 ma-5">
+            <v-card-text>
+              <v-card class="pa-2">
+              <v-card-text class="mt-1">Adicione os produtos a lista.</v-card-text>
               <v-chip-group column>
-                <v-chip v-for="item in lists" :key="item.id" class="ma-1 success"><v-icon color="error" class="ma-1" @click="minValor(item.id,item.valor)">mdi-close</v-icon>{{  item.nome  }} (R$ {{ item.valor }})</v-chip>
+                <v-chip v-for="itemList in lists" :key="itemList.id">
+                  {{  itemList.nome  }} 
+                  <span class="success--text"><strong>(R$ {{  itemList.valor  }})</strong></span>
+                  <v-icon @click="minValor(itemList.valor,itemList, itemList.id)" color="error">mdi-close</v-icon>
+                </v-chip>
               </v-chip-group>
-            </v-card>
-            <v-divider></v-divider>
+              </v-card>
+            </v-card-text>
             <v-card-title class="text-h4 ma-2 ml-0">
               Opções
             </v-card-title>
             <v-card-text>
-              <v-text-field v-model.number="acrescimoValor" prefix="R$" type="number" label="Acréscimo" append-icon="mdi-arrow-up" class="success--text" color="success" outlined></v-text-field>
-              <v-text-field v-model.number="descontoValor" prefix="R$" type="number" label="Desconto" append-icon="mdi-arrow-down" class="warning--text" color="warning" outlined></v-text-field>
-              <v-btn color="primary" outlined @click="defined()">definir</v-btn>
+              <v-text-field :disabled="defaction" v-model.number="acrescimoValor" prefix="R$" type="number" label="Acréscimo" append-icon="mdi-arrow-up" class="success--text" color="success" outlined></v-text-field>
+              <v-text-field :disabled="defaction" v-model.number="descontoValor" prefix="R$" type="number" label="Desconto" append-icon="mdi-arrow-down" class="warning--text" color="warning" outlined></v-text-field>
+              <v-btn color="primary" v-if="defactionBtn" outlined @click="defined()">definir</v-btn>
+              <v-btn color="success" v-if="defactionBtnReset" outlined @click="resetOpcoes()"><v-icon>mdi-reload</v-icon></v-btn>
+              <v-alert type="info" v-model="valueAdd" dismissible transition="scale-transition" outlined class="mt-5">
+                Opções registradas.
+              </v-alert>
+              <v-alert type="warning" v-model="valueAddValid" dismissible transition="scale-transition" outlined class="mt-5">
+                Nenhum valor inserido.
+              </v-alert>
             </v-card-text>
             <v-divider></v-divider>
-            <v-card-text class="mt-5">
+            <v-card-text class="mt-5 text-center">
               <div class="text-h3">Valor total:</div> 
-              <div class="success--text text-h4"> - R$ {{ infos.valorTotal }}</div>
+              <div class="success--text text-h4">R$ {{ infos.valorTotal.toFixed(2) }}</div>
             </v-card-text>
             <v-card-actions class="mt-5">
               <v-spacer></v-spacer>
-              <v-btn @click="dialogVenda=false">cancelar</v-btn>
+              <v-btn class="warning ma-1" @click="cancelarPedido()">cancelar</v-btn>
+              <v-btn class="primary ma-1">Comanda</v-btn>
+              <v-btn class="success ma-1" @click="cancelarPedido()">Feito</v-btn>
             </v-card-actions>
         </v-card>
       </v-dialog>
@@ -86,18 +159,29 @@
 </template>
 
 <script>
+//import { db, doc, setDoc } from "firebase/firestore";
 import { doc, deleteDoc } from "firebase/firestore";
 import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
-          lists: [],
+          show: false,
+          idpedido:'',
+          dialogNomePedido: false,
+          editedIndex: -1,
+          valueAdd: false,
+          valueAddValid: false,
+          defaction: false,
+          defactionBtn: true,
+          defactionBtnReset: false,
+          search:null,
           infos:{valorTotal: 0},
           acrescimoValor:0,
           descontoValor:0,
           dialogVenda: false,
           items:[],
           classis:[],
+          lists: []
         }
     },
     mounted(){
@@ -118,62 +202,125 @@ export default {
     async buscarProdutosVenda(){
         this.uid = fb.auth.currentUser.uid;
         this.items = []
-        const logTasks = await fb.produtosCollection.where("uid","==",this.uid).get();
+        if (this.search != null){
+        const logTasks = await fb.produtosCollection.where("uid","==",this.uid).where("classe","==",this.search).get();
         for (const doc of logTasks.docs) {
           this.items.push({
             nome: doc.data().produto,
             valor: doc.data().valor,
             id: doc.data().produtoID,
           })
-      }
-    },
-    async addValor(nome,id,valor){
-      this.uid = fb.auth.currentUser.uid;
-      const res = await fb.pedidoItemsCollection.add({
-        produtoNome: nome,
-        idProduto: id,
-        valor: valor,
-        uid: this.uid
-      })
-      const idItemAdd = res.id
-      await fb.pedidoItemsCollection.doc(idItemAdd).update({
-        idItem: idItemAdd,
-        });
-      this.buscarItems();
-      this.infos.valorTotal += valor
-    },
-    async minValor(id,valormin){
-      await deleteDoc(doc(fb.pedidoItemsCollection, id));
-      this.buscarItems();
-      this.infos.valorTotal -= valormin
-      if(this.infos.valorTotal < 0){
-        this.infos.valorTotal = 0
-      }
-     
-    },
-    async buscarItems(){
-      this.uid = fb.auth.currentUser.uid;
-      this.lists = [];
-      const logTasks = await fb.pedidoItemsCollection.where("uid","==",this.uid).get();
-        for (const doc of logTasks.docs) {
-          this.lists.push({
-            nome: doc.data().produtoNome,
-            id: doc.data().idItem,
-            valor: doc.data().valor
+        }}
+        else{
+        const logTasks2 = await fb.produtosCollection.where("uid","==",this.uid).get();
+        for (const doc of logTasks2.docs) {
+          this.items.push({
+            nome: doc.data().produto,
+            valor: doc.data().valor,
+            id: doc.data().produtoID,
           })
         }
+        }
+    },
+    async createPedido(){
+      this.dialogNomePedido = false
+      this.dialogVenda = true
+      this.uid = fb.auth.currentUser.uid;
+      const res = await fb.pedidoItemsCollection.add({
+        owner: this.uid,
+        date: this.printDate(),
+        nomePedido: this.nomePedido
+      });
+      const idPedidoAdd = res.id
+      this.idPedido = idPedidoAdd
+      await fb.pedidoItemsCollection.doc(idPedidoAdd).update({
+        pedidoID: idPedidoAdd,
+      });
+      this.idpedido = idPedidoAdd
+    },
+    async addValor(valor, nome){
+      this.uid = fb.auth.currentUser.uid;
+      const res = await fb.pedidoItemsCollection.add({
+        nome: nome,
+        valor: valor,
+        pedidoID: this.idpedido,
+        owner: this.uid
+      });
+      const idItemAdd = res.id
+      await fb.pedidoItemsCollection.doc(idItemAdd).update({
+        itemID: idItemAdd,
+      });
+      this.infos.valorTotal += valor
+      this.lists.push({
+        nome: nome,
+        valor: valor,
+        id: idItemAdd
+      });
+    },
+    async minValor(valor, itemList, id){
+      if(this.infos.valorTotal - valor < 0){
+        this.infos.valorTotal = 0
+      }
+      else
+      {
+      this.infos.valorTotal -= valor
+      }
+      const v = this.lists.indexOf(itemList)
+      this.lists.splice(v, 1)
+      await deleteDoc(doc(fb.pedidoItemsCollection, id));
     },
     defined(){
+      this.infos.valorTotal += this.acrescimoValor
+      if(this.acrescimoValor == 0 && this.descontoValor == 0){
+        this.valueAddValid = true
+      }
+      else{
+        this.valueAdd = true
+      }
       if(this.infos.valorTotal - this.descontoValor < 0){
         this.descontoValor = 0
       }
       else(
         this.infos.valorTotal -= this.descontoValor
       )
-      this.infos.valorTotal += this.acrescimoValor
+      this.defaction = true
+      this.defactionBtn = false
+      this.defactionBtnReset = true
+    },
+    resetOpcoes(){
+      this.infos.valorTotal -= this.acrescimoValor
+      this.infos.valorTotal += this.descontoValor
+      this.defaction = false
+      this.defactionBtn = true
+      this.defactionBtnReset = false,
+      this.valueAdd = false
+      this.acrescimoValor = 0,
+      this.descontoValor = 0
+      this.valueAddValid = false
+    },
+    async cancelarPedido(){
+      var deleteItems = fb.pedidoItemsCollection.where("pedidoID","==",this.idpedido);
+      deleteItems.get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          doc.ref.delete();
+        });
+      });
+      this.dialogVenda = false
+      this.infos.valorTotal = 0
       this.acrescimoValor = 0
       this.descontoValor = 0
-    }
+      this.nomePedido = ''
+      this.descPedido = ''
+      this.lists = []
+      this.valueAddValid = false
+      this.valueAdd = false
+      this.defactionBtn = true
+      this.defactionBtnReset = false
+      this.idpedido = ''
+    },
+    printDate: function () {
+      return new Date().toLocaleDateString();
+    },
     
   }
 }

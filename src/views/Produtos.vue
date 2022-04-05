@@ -175,18 +175,6 @@
                 sm="6"
                 md="4"
               >
-                <v-text-field
-                  append-icon="mdi-animation"
-                  label="Quantidade"
-                  type="number"
-                  hint="(opicional)"
-                  v-model.number="itemEdit.quantProdutoEdit"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-              >
                 <v-select
                 :rules="[v => !!v || 'Campo obrigatório']"
                 append-icon="mdi-bookmark"
@@ -269,18 +257,6 @@
                 cols="12"
                 sm="6"
                 md="4"
-              >
-                <v-text-field
-                  append-icon="mdi-animation"
-                  label="Quantidade"
-                  type="number"
-                  hint="(opicional)"
-                  v-model.number="quantProduto"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
               >
                 <v-select
                 :rules="[v => !!v || 'Campo obrigatório']"
@@ -406,7 +382,6 @@ import { doc, deleteDoc } from "firebase/firestore";
           },
           { text: 'Valor (R$)', value: 'valor',},
           { text: 'Classificação', value: 'classf',sortable:false },
-          { text: 'Quantidade', value: 'quant',sortable:true,},
           { text: 'ID', value: 'idproduto',sortable:false},
           { text: 'Opções',value: 'iconTable',sortable:false },
         ],
@@ -422,13 +397,8 @@ import { doc, deleteDoc } from "firebase/firestore";
     methods: {
       //methods produtos salvar*******************************************************************************************
        async salvarFirebase () {
-        var soma= this.valorProduto + this.quantProduto
-        alert(soma)
         //validate
         this.$refs.form.validate()
-        if(this.quantProduto == null){
-          this.quantProduto = '- -'
-        }
         if(this.nomeProduto == null || this.tipoProduto == null || this.valorProduto == null){
           this.alertInputProdutos=true
           this.dialogProduto=true
@@ -441,7 +411,6 @@ import { doc, deleteDoc } from "firebase/firestore";
             produto: this.nomeProduto,
             valor: this.valorProduto,
             classe: this.tipoProduto,
-            quantidade: this.quantProduto,
             });
             const idprodutoAdd = res.id
             await fb.produtosCollection.doc(idprodutoAdd).update({
@@ -455,7 +424,6 @@ import { doc, deleteDoc } from "firebase/firestore";
         this.nomeProduto=null
         this.tipoProduto=null
         this.valorProduto=null
-        this.quantProduto=null
         this.$refs.form.resetValidation()
         
         
@@ -464,7 +432,6 @@ import { doc, deleteDoc } from "firebase/firestore";
         this.nomeProduto=null
         this.tipoProduto=null
         this.valorProduto=null
-        this.quantProduto=null
         this.dialogProduto=false
         this.$refs.form.resetValidation()
       },
@@ -479,7 +446,6 @@ import { doc, deleteDoc } from "firebase/firestore";
             name: doc.data().produto,
             valor: doc.data().valor,
             classf: doc.data().classe,
-            quant: doc.data().quantidade
                 
             })
           }
@@ -500,7 +466,6 @@ import { doc, deleteDoc } from "firebase/firestore";
           this.Edits.push({
             nomeProdutoEdit: doc.data().produto,
             valorProdutoEdit: doc.data().valor,
-            quantProdutoEdit: doc.data().quantidade,
             tipoProdutoEdit: doc.data().classe,
           })
         }
@@ -509,7 +474,6 @@ import { doc, deleteDoc } from "firebase/firestore";
           await fb.produtosCollection.doc(this.editValid).update({
               produto: nomeProdutoEdit,
               valor: valorProdutoEdit,
-              quantidade: quantProdutoEdit,
               classe: tipoProdutoEdit
         });
         this.dialogEditar = false

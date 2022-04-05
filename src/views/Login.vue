@@ -49,7 +49,7 @@
               type="warning"
             >Usuário ou senha inválidos.</v-alert>
             <v-btn class="ma-2" outlined color="white" @click="reset">Cancelar</v-btn>
-            <v-btn outlined color="primary" @click="login()" >Login</v-btn>
+            <v-btn outlined color="primary" @click="login()" >Login</v-btn><br>
             <v-btn text color="success" class="ml-2 text-decoration-underline" @click="registerValid = true, loginValid = false">Registrar</v-btn>
             </v-form>
           </v-col>
@@ -102,7 +102,7 @@
               type="warning"
             >Preencha todos os campos.</v-alert>
             <v-btn outlined class="ma-2" color="white" @click="reset">Cancelar</v-btn>
-            <v-btn outlined color="green" @click="criarNovaConta()" style="color:white">Registrar</v-btn>
+            <v-btn outlined color="green" @click="criarNovaConta()" style="color:white">Registrar</v-btn><br>
             <v-btn text color="info" class="ml-2 text-decoration-underline" @click="registerValid = false, loginValid = true">Login</v-btn>
             </v-form>
           </v-col>
