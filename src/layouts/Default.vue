@@ -112,7 +112,7 @@ export default {
       menuUser:true,
       nightMode:false,
       dialogSair: false,
-      sidebar:true,
+      sidebar:false,
       infos:[],
       items: [
         { title: "Home", icon: "mdi-home", to: "/" },

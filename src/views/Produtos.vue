@@ -1,6 +1,6 @@
 <template>
   <v-app>
-      <div class="pa-10">
+      <div class="pa-5">
         <div style="border-left-style:solid;border-left-color:#1976D2;border-left-width:8px;padding-left:10px;" class="text-h4 my-8">Cadastre seus produtos aqui!</div>
         <div style="color:gray;" class="h5 mt-2 mb-4">
         <v-alert
@@ -279,7 +279,7 @@
           dismissible
           text
           type="warning"
-          >Todos os campos devem ser preenchidos, sendo a quantidade opicinal.</v-alert>
+          >Todos os campos devem ser preenchidos.</v-alert>
           <small>*faça suas classificações antes de registrar os produtos</small>
         </v-card-text>
         <v-card-actions>
@@ -383,7 +383,7 @@ import { doc, deleteDoc } from "firebase/firestore";
           { text: 'Valor (R$)', value: 'valor',},
           { text: 'Classificação', value: 'classf',sortable:false },
           { text: 'ID', value: 'idproduto',sortable:false},
-          { text: 'Opções',value: 'iconTable',sortable:false },
+          { text: '',value: 'iconTable',sortable:false },
         ],
         desserts: [],
       }
@@ -423,7 +423,7 @@ import { doc, deleteDoc } from "firebase/firestore";
         //reset form
         this.nomeProduto=null
         this.tipoProduto=null
-        this.valorProduto=null
+        this.valorProduto=0
         this.$refs.form.resetValidation()
         
         
@@ -431,7 +431,7 @@ import { doc, deleteDoc } from "firebase/firestore";
       reset () {
         this.nomeProduto=null
         this.tipoProduto=null
-        this.valorProduto=null
+        this.valorProduto=0
         this.dialogProduto=false
         this.$refs.form.resetValidation()
       },

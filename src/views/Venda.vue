@@ -1,6 +1,6 @@
 <template>
   <v-app>
-      <div class="pa-10">
+      <div class="pa-5">
         <div style="border-left-style:solid;border-left-color:#4CAF50;border-left-width:8px;padding-left:10px;" class="text-h4 my-8">Crie pedidos e vendas aqui!</div>
         <v-alert
         outlined
@@ -13,50 +13,42 @@
         <v-card dark outlined class="mt-8">
           <v-card-title class="">Pedidos/Vendas <v-spacer></v-spacer><v-btn class="" fab dark color="success" @click="dialogNomePedido = true"><v-icon dark>mdi-plus</v-icon></v-btn></v-card-title>
           <v-card-text>
-            <v-card  outlined max-width="400px">
-              <v-card-title class="success text-h4">Titulo</v-card-title>
+            <v-alert type="info" outlined max-width="550px">Seus pedidos serão armazenados aqui em forma de comanda.</v-alert> 
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row>
+            <v-col v-for="itemComand in comanda" :key="itemComand.id" cols="12" sm="3">
+            <v-card outlined>
+              <v-card-title class="success text-h4">{{  itemComand.nome  }}</v-card-title>
               <v-card-text class="mt-5">
-                Descrição:
+                <strong>Detalhes:</strong>
+                {{  itemComand.desc  }}
               </v-card-text>
               <v-divider></v-divider>
               <v-list shaped>
                 <v-subheader>Produtos</v-subheader>
-                <v-list-item-group color="success">
-                  <v-list-item>
+                <v-list-item-group  v-for="itemPed in pedidos" :key="itemPed.id" color="success">
+                  <v-list-item v-if="itemComand.id == itemPed.id">
                     <v-list-item-icon><v-icon>mdi-chevron-right</v-icon></v-list-item-icon>
-                    <v-list-item-content>Opa</v-list-item-content>
+                    <v-list-item-content>{{ itemPed.pedidos  }}  - R$ {{  itemPed.valor.toFixed(2)  }}</v-list-item-content>
                   </v-list-item>
                 </v-list-item-group>
               </v-list>
               <v-divider></v-divider>
-              <v-card-text class="success--text text-h5">Valor:</v-card-text>
+              <v-card-text class="success--text text-h5">Valor: R$ {{  itemComand.valor.toFixed(2)  }}</v-card-text>
+              <v-card-text>
+                   <span class="warning--text"><strong>Valor desconto: </strong>R$ {{  itemComand.valorMin.toFixed(2)  }}</span><br>
+                   <span class="primary--text"><strong>Valor acréscimo: </strong>R$ {{  itemComand.valorAdd.toFixed(2)  }}</span>
+              </v-card-text>
               <v-card-actions>
-                <v-btn color="primary lighten-2" text @click="show = !show">
-                  Mais detalhes
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn
-                  icon
-                  @click="show = !show"
-                >
-                  <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-                </v-btn>
-              </v-card-actions>
-              <v-expand-transition>
-                <div v-show="show">
-                  <v-card-text>
-                   ID:324234554664<br>
-                   Valor desconto:000<br>
-                   Valor acréscimo:000
-                  </v-card-text>
-                </div>
-              </v-expand-transition>
-              <v-card-actions>
-                <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
                 <v-btn class="error">Excluir</v-btn>
                 <v-btn class="success">Feito</v-btn>
               </v-card-actions>
             </v-card>
+            </v-col>
+          </v-row>
           </v-card-text>
         </v-card>
       </div>
@@ -65,10 +57,11 @@
           <v-card-text class="text-h4 success white--text pa-4">Nome pedido</v-card-text>
           <v-card-text class="mt-5">
             <v-text-field v-model="nomePedido" label="Nome pedido" append-icon="mdi-card-text" outlined></v-text-field>
+            <v-alert type="warning" outlined dismissible v-model="alertCreate" transition="scale-transition">Defina um nome para o pedido.</v-alert>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="dialogNomePedido = false, nomePedido = ''">Cancelar</v-btn>
+            <v-btn @click="dialogNomePedido = false, nomePedido = '',alertCreate = false">Cancelar</v-btn>
             <v-btn class="success" @click="createPedido()">Criar</v-btn>
           </v-card-actions>
         </v-card>
@@ -104,7 +97,7 @@
                 v-for="itemProduto in items"
                 :key="itemProduto.id"
               >
-                <td>{{ itemProduto.nome }}<br><span class="success--text">R$ {{  itemProduto.valor  }}</span></td>
+                <td>{{ itemProduto.nome }}<br><span class="success--text">R$ {{  itemProduto.valor.toFixed(2)  }}</span></td>
                 <td class="text-right">
                 <v-chip class="success" @click="addValor(itemProduto.valor,itemProduto.nome)"><v-icon>mdi-plus</v-icon></v-chip>
                 </td>
@@ -146,12 +139,13 @@
             <v-card-text class="mt-5 text-center">
               <div class="text-h3">Valor total:</div> 
               <div class="success--text text-h4">R$ {{ infos.valorTotal.toFixed(2) }}</div>
+              <v-alert class="mt-5" type="error" outlined v-model="pedidoValid" dismissible transition="scale-transition">Escolha os produtos ou cancele o pedido.</v-alert>
             </v-card-text>
             <v-card-actions class="mt-5">
               <v-spacer></v-spacer>
               <v-btn class="warning ma-1" @click="cancelarPedido()">cancelar</v-btn>
-              <v-btn class="primary ma-1">Comanda</v-btn>
-              <v-btn class="success ma-1" @click="cancelarPedido()">Feito</v-btn>
+              <v-btn class="primary ma-1" @click="createComanda()">Comanda</v-btn>
+              <v-btn class="success ma-1" @click="registerPedido()">Feito</v-btn>
             </v-card-actions>
         </v-card>
       </v-dialog>
@@ -165,6 +159,10 @@ import * as fb from '@/plugins/firebase'
 export default {
     data(){
         return{
+          pedidoValid: false,
+          alertCreate: false,
+          pedidos: [],
+          comanda: [],
           show: false,
           idpedido:'',
           dialogNomePedido: false,
@@ -187,6 +185,7 @@ export default {
     mounted(){
       this.buscarClasses();
       this.buscarProdutosVenda();
+      this.buscarComandas();
     },
     methods:{
       async buscarClasses(){
@@ -223,28 +222,36 @@ export default {
         }
     },
     async createPedido(){
-      this.dialogNomePedido = false
-      this.dialogVenda = true
-      this.uid = fb.auth.currentUser.uid;
-      const res = await fb.pedidoItemsCollection.add({
-        owner: this.uid,
-        date: this.printDate(),
-        nomePedido: this.nomePedido
-      });
-      const idPedidoAdd = res.id
-      this.idPedido = idPedidoAdd
-      await fb.pedidoItemsCollection.doc(idPedidoAdd).update({
-        pedidoID: idPedidoAdd,
-      });
-      this.idpedido = idPedidoAdd
+      if(this.nomePedido == null || this.nomePedido == ''){
+        this.alertCreate = true
+      }
+      else{
+        this.pedidoValid = false
+        this.defaction = false,
+        this.dialogNomePedido = false
+        this.dialogVenda = true
+        this.uid = fb.auth.currentUser.uid;
+        const res = await fb.pedidoItemsCollection.add({
+          owner: this.uid,
+          date: this.printDate(),
+          nomePedido: this.nomePedido,
+          tipo: "top"
+        });
+        const idPedidoAdd = res.id
+        await fb.pedidoItemsCollection.doc(idPedidoAdd).update({
+          pedidoID: idPedidoAdd,
+        });
+        this.idpedido = idPedidoAdd
+      }
     },
     async addValor(valor, nome){
       this.uid = fb.auth.currentUser.uid;
       const res = await fb.pedidoItemsCollection.add({
         nome: nome,
         valor: valor,
-        pedidoID: this.idpedido,
-        owner: this.uid
+        pedidoIDitem: this.idpedido,
+        owner: this.uid,
+        tipo: "item"
       });
       const idItemAdd = res.id
       await fb.pedidoItemsCollection.doc(idItemAdd).update({
@@ -317,6 +324,68 @@ export default {
       this.defactionBtn = true
       this.defactionBtnReset = false
       this.idpedido = ''
+    },
+    async createComanda(){
+      if(this.infos.valorTotal == null || this.infos.valorTotal == 0){
+        this.pedidoValid = true
+      }
+      else{
+        if(this.descPedido == null || this.descPedido == ''){
+          this.descPedido = "Nenhum detalhe definido."
+        }
+        if(this.acrescimoValor == null || this.acrescimoValor == 0 || this.acrescimoValor == ''){
+          this.acrescimoValor = 0
+        }
+        if(this.descontoValor == null || this.descontoValor == 0 || this.descontoValor == ''){
+          this.descontoValor = 0
+        }
+
+        await fb.pedidoItemsCollection.doc(this.idpedido).update({
+          descricao: this.descPedido,
+          valorAD: this.acrescimoValor,
+          valorMN: this.descontoValor,
+          valorTotal: this.infos.valorTotal
+        });
+        this.dialogVenda = false
+        this.infos.valorTotal = 0
+        this.acrescimoValor = 0
+        this.descontoValor = 0
+        this.nomePedido = ''
+        this.descPedido = ''
+        this.lists = []
+        this.valueAddValid = false
+        this.valueAdd = false
+        this.defactionBtn = true
+        this.defactionBtnReset = false
+        this.idpedido = ''
+        this.buscarComandas();
+      }
+    },
+    async buscarComandas(){
+      this.uid = fb.auth.currentUser.uid;
+      this.comanda = [];
+      this.pedidos = [];
+
+      const logTasks = await fb.pedidoItemsCollection.where("owner","==",this.uid).where("tipo","==","top").get();
+        for (const doc of logTasks.docs) {
+          this.comanda.push({
+            nome: doc.data().nomePedido,
+            desc: doc.data().descricao,
+            valorAdd: doc.data().valorAD,
+            valorMin: doc.data().valorMN,
+            id: doc.data().pedidoID,
+            valor: doc.data().valorTotal
+            });
+          }
+      const logTasks2 = await fb.pedidoItemsCollection.where("owner","==",this.uid).where("tipo","==","item").get();
+        for (const doc of logTasks2.docs) {
+          this.pedidos.push({
+            pedidos: doc.data().nome,
+            valor:doc.data().valor,
+            id: doc.data().pedidoIDitem
+            });
+          }
+      
     },
     printDate: function () {
       return new Date().toLocaleDateString();
