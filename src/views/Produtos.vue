@@ -82,13 +82,15 @@
       --
       --
       -->
-      <v-dialog v-model="dialogClassDelete" persistent max-width="500px">
+      <v-dialog v-model="dialogClassDelete" max-width="500px">
         <v-card>
+         
           <v-card-title class="primary white--text">
             <v-icon class="mr-2" color="white">mdi-bookmark-minus</v-icon><span class="text-h6">Deletar classificação</span>
             <v-spacer></v-spacer>
             <v-icon @click="dialogClassDelete = false" color="white">mdi-close</v-icon>
           </v-card-title>
+         
           <v-card-text>
               <v-simple-table>
                 <template v-slot:default>

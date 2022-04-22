@@ -10,32 +10,30 @@
         Clique em <v-icon color="success">mdi-plus-circle</v-icon> para criar seus pedidos ou realizar uma venda.
         </v-alert>
         <div class="text-h2 success--text mt-10">Comandas</div>
-        <v-card dark outlined class="mt-8">
-          <v-card-title class="">Pedidos/Vendas <v-spacer></v-spacer><v-btn class="" fab dark color="success" @click="dialogNomePedido = true"><v-icon dark>mdi-plus</v-icon></v-btn></v-card-title>
+        <v-card  outlined class="mt-8">
+          <v-card-title class="">Pedidos<v-spacer></v-spacer><v-btn class="" fab dark color="success" @click="dialogNomePedido = true"><v-icon dark>mdi-plus</v-icon></v-btn></v-card-title>
           <v-card-text>
             <v-alert type="info" outlined max-width="550px">Seus pedidos serão armazenados aqui em forma de comanda.</v-alert> 
           </v-card-text>
-          <v-divider></v-divider>
           <v-card-text>
             <v-row>
-            <v-col v-for="itemComand in comanda" :key="itemComand.id" cols="12" sm="3">
-            <v-card outlined>
-              <v-card-title class="success text-h4">{{  itemComand.nome  }}</v-card-title>
+            <v-col v-for="itemComand in comanda" :key="itemComand.id_c" cols="12" sm="4">
+            <v-card elevation="10">
+              <v-card-title class="success text-h4 black--text">{{  itemComand.nome  }}<v-spacer></v-spacer><v-btn fab class="warning"><v-icon color="black">mdi-pencil</v-icon></v-btn></v-card-title>
               <v-card-text class="mt-5">
                 <strong>Detalhes:</strong>
                 {{  itemComand.desc  }}
               </v-card-text>
               <v-divider></v-divider>
-              <v-list shaped>
-                <v-subheader>Produtos</v-subheader>
-                <v-list-item-group  v-for="itemPed in pedidos" :key="itemPed.id" color="success">
-                  <v-list-item v-if="itemComand.id == itemPed.id">
-                    <v-list-item-icon><v-icon>mdi-chevron-right</v-icon></v-list-item-icon>
-                    <v-list-item-content>{{ itemPed.pedidos  }}  - R$ {{  itemPed.valor.toFixed(2)  }}</v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-              <v-divider></v-divider>
+              <v-card-text><h3>Produtos</h3></v-card-text>
+                <v-chip-group column class="pa-3 pt-0">
+                  <div v-for="itemPed in pedidos" :key="itemPed.id_i">
+                  <v-chip v-if="itemComand.id_c == itemPed.id_i" class="grey darken-4 white--text">
+                    {{ itemPed.pedidos  }} <v-divider vertical  color="white" class="mr-2 ml-2"></v-divider><span class="success--text">{{  itemPed.valor.toFixed(2)  }}</span> 
+                  </v-chip>
+                  </div>
+                </v-chip-group>
+              <v-divider></v-divider>        
               <v-card-text class="success--text text-h5">Valor: R$ {{  itemComand.valor.toFixed(2)  }}</v-card-text>
               <v-card-text>
                    <span class="warning--text"><strong>Valor desconto: </strong>R$ {{  itemComand.valorMin.toFixed(2)  }}</span><br>
@@ -43,8 +41,8 @@
               </v-card-text>
               <v-card-actions>
               <v-spacer></v-spacer>
-                <v-btn class="error">Excluir</v-btn>
-                <v-btn class="success">Feito</v-btn>
+                <v-btn class="error" @click="excluirComanda(itemComand.id_c)">Excluir</v-btn>
+                <v-btn class="success" @click="doneComanda()">Feito</v-btn>
               </v-card-actions>
             </v-card>
             </v-col>
@@ -179,7 +177,7 @@ export default {
           dialogVenda: false,
           items:[],
           classis:[],
-          lists: []
+          lists: [],
         }
     },
     mounted(){
@@ -249,7 +247,7 @@ export default {
       const res = await fb.pedidoItemsCollection.add({
         nome: nome,
         valor: valor,
-        pedidoIDitem: this.idpedido,
+        pedidoID: this.idpedido,
         owner: this.uid,
         tipo: "item"
       });
@@ -373,7 +371,7 @@ export default {
             desc: doc.data().descricao,
             valorAdd: doc.data().valorAD,
             valorMin: doc.data().valorMN,
-            id: doc.data().pedidoID,
+            id_c: doc.data().pedidoID,
             valor: doc.data().valorTotal
             });
           }
@@ -382,10 +380,21 @@ export default {
           this.pedidos.push({
             pedidos: doc.data().nome,
             valor:doc.data().valor,
-            id: doc.data().pedidoIDitem
+            id_i: doc.data().pedidoID
             });
           }
       
+    },
+    async excluirComanda(excID){
+      var deleteItems = fb.pedidoItemsCollection.where("pedidoID","==",excID);
+      deleteItems.get().then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          doc.ref.delete();
+        });
+      });
+      await deleteDoc(doc(fb.pedidoItemsCollection, excID));
+      this.buscarComandas();
+
     },
     printDate: function () {
       return new Date().toLocaleDateString();

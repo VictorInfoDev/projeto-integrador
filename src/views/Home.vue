@@ -1,13 +1,13 @@
 <template>
     <v-app>
           <div class="container">
-            <div class="pa-10">
+            <div class="pa-5">
             <div><span class="text-h3"><strong>Bem vindo</strong></span></div>
             <div class="my-2 text-h6" v-show="date" style="color:gray;padding-left:3px;"><v-icon class="mr-2">mdi-calendar-blank</v-icon>{{ date }}</div>
             <v-divider></v-divider>
             <v-btn to="/Venda" class="ma-2 mt-5" fab dark color="success"><v-icon dark>mdi-basket-unfill</v-icon></v-btn>
             <v-btn to="/Produtos" class="ma-2 mt-5" fab dark color="primary"><v-icon dark>mdi-basket-plus</v-icon></v-btn>
-            <v-btn to="/Lembretes" class="ma-2 mt-5" fab dark color="warning"><v-icon dark>mdi-clipboard-outline</v-icon></v-btn>
+            <v-btn to="/Lembretes" class="ma-2 mt-5" fab dark color="purple"><v-icon dark>mdi-clipboard-outline</v-icon></v-btn>
             <v-btn to="/Info" class="ma-2 mt-5" fab dark color="info"><v-icon dark>mdi-store-cog</v-icon></v-btn>
             <br>
             <br>
@@ -20,7 +20,7 @@
                 colored-border
                 class="font-weight-medium"
                 >
-                  Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de produtos para todas as lojas e empresas em geral, um sistema simples, prático e organizado para acelerar os processos de suas vendas, deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
+                  Este site foi desenvolvido por estudantes de TI do IFC com o objetivo de melhorar o gerenciamento de vendas para todas as lojas e empresas em geral, um sistema simples, prático e organizado para acelerar os processos de suas vendas, deixando você no total controle, contando com históricos, informações de venda e listagem de produtos.
                 </v-alert>
             </div>
             <br>
